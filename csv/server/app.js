@@ -34,34 +34,43 @@ router.post('/',function(req,res)
       
       .on("data", (row) => {
         const keys = Object.keys(row);
-        if (temp==0)
-        {
-          console.log(keys[0],keys[1]);
-          var sql = "create table if not exists csv_datatable(Game_Number varchar(150),Game_Length varchar(150))";
+        var values=[];
+        console.log(keys)
+        keys.map(item=>values.push(""+`${item.toString().replace(/ /g,"_")}`+" varchar(150)"))
+        value=[values.toString().replace(/['"]+/g, '')]
+        console.log(values)
+          var sql = `create table if not exists csvdb.csv_datatable(${[values]})`;
           con.query(sql,function (err, result) {
             if (err) throw err;
             // console.log("Number of records inserted: " + result.affectedRows);
           });
-          temp=1;
-        }
-        else
-        {
-          var sql="insert into csv_datatable values (?,?)"
-          con.query(sql,[row[keys[0]],row[keys[1]]],function (err, result) {
+          const val=[];
+          keys.forEach(element => {
+            val.push(""+row[element].toString().trim()+"")
+          });
+          console.log(val)
+          var sqlQ=`insert into csvdb.csv_datatable values(?);`
+          con.query(sqlQ,[val],function (err, result) {
             if (err) throw err;
             // console.log("Number of records inserted: " + result.affectedRows);
           });
-        }
       })
       .on('end', () => {
         console.log("All data Updated in database")
-        var sql="select * from csv_datatable"
+        var sql="select * from csvdb.csv_datatable"
         con.query(sql,function (err,result)
         {
           if (err) throw err
           console.log(result)
+          var sql1="drop table csvdb.csv_datatable"
+        con.query(sql1,function(err,res)
+        {
+          if (err) throw err
+          console.log(res)
+        })
           res.json(result)
         })
+        
       });      
 }
 })
