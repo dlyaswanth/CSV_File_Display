@@ -47,7 +47,7 @@ function App(){
           <label>
             Select the CSV File 
           </label>
-          <input type="file" value={file} accept={".csv"} onChange={(event)=>setFile(event.target.value)}/><br />
+          <input type="file" value={file} accept={".csv,.xls, .xlsx"} onChange={(event)=>setFile(event.target.value)}/><br />
           <button onClick={Submit}>Submit</button>
         </div>
         <MaterialTable 
